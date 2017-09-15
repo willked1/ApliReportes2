@@ -6,6 +6,7 @@
 package views;
 
 import dataBase.ConexionBD;
+import java.io.File;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
@@ -579,7 +580,7 @@ public class GUIReporte extends javax.swing.JFrame {
             Class.forName("oracle.jdbc.driver.OracleDriver");
             con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:XE","ciclista","ciclista");
         
-            reporte = (JasperReport) JRLoader.loadObjectFromFile("D:\\William Duarte\\Documents\\NetBeansProjects\\ApliReportes2\\src\\reports\\Report.jasper");
+            reporte = (JasperReport) JRLoader.loadObjectFromFile("./src/reports/Report.jasper");
             JasperPrint print = JasperFillManager.fillReport(reporte, null, con);
             JasperViewer ver = new JasperViewer (print,false);
             ver.setTitle("Prueba Reporte");
@@ -600,7 +601,7 @@ public class GUIReporte extends javax.swing.JFrame {
             Class.forName("oracle.jdbc.driver.OracleDriver");
             con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:XE","ciclista","ciclista");
         
-            reporte = (JasperReport) JRLoader.loadObjectFromFile("D:\\William Duarte\\Documents\\NetBeansProjects\\ApliReportes2\\src\\reports\\Report2.jasper");
+            reporte = (JasperReport) JRLoader.loadObjectFromFile("./src/reports/Report2.jasper");
             JasperPrint print = JasperFillManager.fillReport(reporte, null, con);
             JasperViewer ver = new JasperViewer (print,false);
             ver.setTitle("Prueba Reporte");
