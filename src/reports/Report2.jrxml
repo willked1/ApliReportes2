@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report name" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="9403436e-ff9d-4a69-aa07-abd2281a4df0">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<queryString>
+		<![CDATA[SELECT
+     CICLISTA."NOMBRE" AS CICLISTA_NOMBRE,
+     CICLISTA."APELLIDO" AS CICLISTA_APELLIDO
+FROM
+     "CICLISTA"."CICLISTA" CICLISTA INNER JOIN "CICLISTA"."VUELTA" VUELTA ON CICLISTA."ID" = VUELTA."IDCICLISTA"
+     INNER JOIN "CICLISTA"."COMPETENCIA" COMPETENCIA ON VUELTA."IDCOMPETENCIA" = COMPETENCIA."ID"
+WHERE
+     VUELTA."IDCICLISTA" = CICLISTA."ID" 
+AND VUELTA."IDCOMPETENCIA" = COMPETENCIA."ID" 
+ AND competencia."NOMBRE" = 'TOUR DE FRANCIA']]>
+	</queryString>
+	<field name="CICLISTA_NOMBRE" class="java.lang.String"/>
+	<field name="CICLISTA_APELLIDO" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="79" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="35" width="555" height="44" uuid="1f275dbf-e0ae-4fd2-b62b-5a75addf80cb"/>
+				<textElement textAlignment="Center">
+					<font size="24" isBold="true" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[CICLISTAS EN EL TOUR DE FRANCIA]]></text>
+			</staticText>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="35" splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="36" splitType="Stretch">
+			<staticText>
+				<reportElement x="80" y="2" width="100" height="20" uuid="665f852f-0bee-47a3-ba62-b2fdc40d94d1"/>
+				<textElement textAlignment="Center">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[NOMBRE]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="326" y="2" width="100" height="20" uuid="c7be2707-e4f8-4f17-a3d2-2eb9430ef2de"/>
+				<textElement textAlignment="Center">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[APELLIDO]]></text>
+			</staticText>
+			<line>
+				<reportElement x="15" y="30" width="525" height="1" uuid="c935e28d-c87d-4171-8d6d-f73e5af30ad6"/>
+			</line>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="31" splitType="Stretch">
+			<textField>
+				<reportElement x="80" y="0" width="100" height="20" uuid="50861cd9-c4f2-4bb9-b596-94e368f9ca3a"/>
+				<textFieldExpression><![CDATA[$F{CICLISTA_NOMBRE}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="326" y="0" width="100" height="20" uuid="a20802ce-6c1e-47ac-a8ff-0b967fadad13"/>
+				<textFieldExpression><![CDATA[$F{CICLISTA_APELLIDO}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="45" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="54" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>
