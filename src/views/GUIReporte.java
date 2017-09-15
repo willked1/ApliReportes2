@@ -6,10 +6,6 @@
 package views;
 
 import dataBase.ConexionBD;
-import java.io.File;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -32,6 +28,8 @@ import net.sf.jasperreports.view.JasperViewer;
  */
 public class GUIReporte extends javax.swing.JFrame {
 
+    private final static String SELECCIONE_ATRIBUTO = "Seleccione atributo";
+    
     private ConexionBD conn;
     private String nomTabla;
     private ArrayList<Atributo> elements;
@@ -70,7 +68,7 @@ public class GUIReporte extends javax.swing.JFrame {
         }
     }
     
-    public void obtenerElementos()
+    public void obtenerAtributosSeleccionados()
     {
         obtenidos = new ArrayList<>();
         int[] indices = listAtributos.getSelectedIndices();
@@ -97,8 +95,8 @@ public class GUIReporte extends javax.swing.JFrame {
     public void generarComboBox()
     {     
         
-        this.cb1.addItem("Seleccione una tabla");
-        this.cb2.addItem("Seleccione una tabla");
+        this.cb1.addItem(SELECCIONE_ATRIBUTO);
+        this.cb2.addItem(SELECCIONE_ATRIBUTO);
         
         for (int i = 0; i < elements.size(); i++) {
             this.cb1.addItem(elements.get(i).getNombre());
@@ -107,8 +105,8 @@ public class GUIReporte extends javax.swing.JFrame {
     }
     
     
-    //metodo que retorna los obtenidos en un jTextField
-    public String obtenidos()
+    //metodo que retorna los atributosSeleccionadosSQL en un jTextField
+    public String atributosSeleccionadosSQL()
     {
         String obt = "";
             
@@ -126,7 +124,7 @@ public class GUIReporte extends javax.swing.JFrame {
     //metodo que realiza una consulta sencilla sin utilizar el where
     public void condicionSinWhere()
     {
-        String obt = obtenidos();                           
+        String obt = atributosSeleccionadosSQL();                           
 
         String cad = "select "+ obt +" from " + nomTabla;
         System.out.println(cad);
@@ -134,39 +132,45 @@ public class GUIReporte extends javax.swing.JFrame {
         hacerResultSet(cad);
     }
     
+    private String darCondicionWhere(String comp1, String nomAtr, String valorCondicion){
+        String cad = "";
+        if(comp1.equals("IGUAL"))
+        {
+            cad = nomAtr + " = '" + valorCondicion + "'";
+        }
+        else if(comp1.equals("MAYOR"))
+        {
+            cad = nomAtr+" > " + valorCondicion;
+        }
+        else if(comp1.equals("EMPIEZA POR"))
+        {
+            cad = nomAtr+" LIKE '"+valorCondicion+"%'";
+        }
+        else if(comp1.equals("MENOR"))
+        {
+            cad = nomAtr+" < "+ valorCondicion;
+        }
+        return cad;
+    }
+    
     public void condicionWhereUno()
     {          
         String nomAtr = cb1.getSelectedItem().toString();
         String comp1 = cbComp1.getSelectedItem().toString();
         String buscar = txtCampo1.getText();
-        ;
-        String obt = obtenidos(); 
-        String cad;
-
-        if(comp1.equals("IGUAL"))
-        {
-            cad = "select "+ obt +" from " + nomTabla +" where "+nomAtr+" = '"+buscar+"'";
+        String obt = atributosSeleccionadosSQL(); 
+        if(nomAtr.equals(SELECCIONE_ATRIBUTO)){
+            JOptionPane.showMessageDialog(this, "Seleccione un atributo para la consulta");
+            return;
         }
-        else if(comp1.equals("MAYOR"))
-        {
-            cad = "select "+ obt +" from " + nomTabla +" where "+nomAtr+" > "+buscar;
+        String condicionWhere = darCondicionWhere(comp1, nomAtr, buscar);
+        if(condicionWhere.equals("")){
+            JOptionPane.showMessageDialog(this, "Debe seleccionar un tipo de condicion");
+        }else{
+            String cad = "select "+ obt +" from " + nomTabla +" where " + condicionWhere;
+            System.out.println(cad);
+            hacerResultSet(cad);
         }
-        else if(comp1.equals("EMPIEZA POR"))
-        {
-            cad = "select "+ obt +" from " + nomTabla +" where "+nomAtr+" LIKE '"+buscar+"%'";
-        }
-        else if(comp1.equals("MENOR"))
-        {
-            cad = "select "+ obt +" from " + nomTabla +" where "+nomAtr+" < "+buscar;
-        }
-        else
-        {
-            JOptionPane.showMessageDialog(this, "Debe seleccionar una opción");
-            cad = "";
-        }
-        System.out.println(cad);
-        
-        hacerResultSet(cad);
     }
     
     public void condicionWhereDos()
@@ -179,71 +183,33 @@ public class GUIReporte extends javax.swing.JFrame {
         String comp2 = cbComp2.getSelectedItem().toString();
         String buscar2 = txtCampo2.getText();
         
-        String obt = obtenidos(); 
-        String cad;
-        String cad2;
-
-        if(comp1.equals("IGUAL"))
-        {
-            cad = "select "+ obt +" from " + nomTabla +" where "+nomAtr1+" = '"+buscar1+"'";
-        }
-        else if(comp1.equals("MAYOR"))
-        {
-            cad = "select "+ obt +" from " + nomTabla +" where "+nomAtr1+" > "+buscar1;
-        }
-        else if(comp1.equals("EMPIEZA POR"))
-        {
-            cad = "select "+ obt +" from " + nomTabla +" where "+nomAtr1+" LIKE '"+buscar1+"%'";
-        }
-        else if(comp2.equals("MENOR"))
-        {
-            cad = "select "+ obt +" from " + nomTabla +" where "+nomAtr1+" < "+buscar1;
-        }
-        else
-        {
-            JOptionPane.showMessageDialog(this, "Debe seleccionar una opción");
-            cad = "";
+        if(nomAtr1.equals(SELECCIONE_ATRIBUTO) || nomAtr2.equals(SELECCIONE_ATRIBUTO)){
+            JOptionPane.showMessageDialog(this, "Seleccione un atributo para la consulta");
+            return;
         }
         
-        
-        if(comp2.equals("IGUAL"))
-        {
-            cad2 = " "+nomAtr2+" = '"+buscar2+"'";
+        String obt = atributosSeleccionadosSQL(); 
+        String condicion1 = darCondicionWhere(comp1, nomAtr1, buscar1);
+        String condicion2 = darCondicionWhere(comp2, nomAtr2, buscar2);
+        if(condicion1.equals("") || condicion2.equals("")){
+            JOptionPane.showMessageDialog(this, "Debe seleccionar un tipo de condicion");
+        }else{
+            String cad = "";
+            if(compIO.equals("AND"))
+            {
+                cad = "select "+ obt +" from " + nomTabla +" where " + condicion1 + " AND " + condicion2;
+            }
+            else if(compIO.equals("OR"))
+            {
+                cad = "select "+ obt +" from " + nomTabla +" where " + condicion1 + " OR " + condicion2;
+            }
+            if(cad.equals("")){
+                JOptionPane.showMessageDialog(this, "Seleccione el tipo de compuerta entre las dos condiciones");
+            }else{
+                System.out.println(cad);
+                hacerResultSet(cad);
+            }
         }
-        else if(comp2.equals("MAYOR"))
-        {
-            cad2 = " "+nomAtr2+" > "+buscar2;
-        }
-        else if(comp2.equals("EMPIEZA POR"))
-        {
-            cad2 = " "+nomAtr2+" LIKE '"+buscar2+"%'";
-        }
-        else if(comp2.equals("MENOR"))
-        {
-            cad2 = " "+nomAtr2+" < "+buscar2;
-        }
-        else
-        {
-            JOptionPane.showMessageDialog(this, "Debe seleccionar una opción");
-            cad2 = "";
-        }
-        
-        if(compIO.equals("AND"))
-        {
-            cad = cad +" AND "+ cad2;
-        }
-        else if(compIO.equals("OR"))
-        {
-            cad = cad +" OR "+ cad2;
-        }
-        else
-        {
-            JOptionPane.showMessageDialog(this, "Debe seleccionar una opción");
-        }
-        
-        System.out.println(cad);
-        
-        hacerResultSet(cad);
     }
     
     public void hacerResultSet(String cad)
@@ -255,10 +221,10 @@ public class GUIReporte extends javax.swing.JFrame {
             
             System.out.println("rms : "+rsm.getColumnCount());
             String x = "";
-            boolean hasRows = false;
+            boolean existeResultado = false;
             while(rs.next())
             {
-                hasRows = true;
+                existeResultado = true;
                 for (int i = 0; i < rsm.getColumnCount(); i++) {
                     x += rs.getString(i+1)+" ";
                 }
@@ -266,7 +232,7 @@ public class GUIReporte extends javax.swing.JFrame {
                 listConsulta.setModel(model);
                 x = "";
             }
-            if(!hasRows)
+            if(!existeResultado)
             {
                 JOptionPane.showMessageDialog(this, "La Consulta no tiene resultados");
                 listConsulta.setModel(new DefaultListModel());
@@ -275,7 +241,12 @@ public class GUIReporte extends javax.swing.JFrame {
             Logger.getLogger(GUIReporte.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
+    @Override
+    public void dispose() {
+        conn.closeConecction();
+        super.dispose(); //To change body of generated methods, choose Tools | Templates.
+    }
     
     /**
      * This method is called from within the constructor to initialize the form.
@@ -530,10 +501,10 @@ public class GUIReporte extends javax.swing.JFrame {
 
     private void butConsultaBasicaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_butConsultaBasicaActionPerformed
         try {
-            obtenerElementos();
+            obtenerAtributosSeleccionados();
             condicionSinWhere();
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Debe seleccionar valores para la consulta");
+            JOptionPane.showMessageDialog(this, "Debe dar valores para la consulta");
         }
 
     }//GEN-LAST:event_butConsultaBasicaActionPerformed
@@ -549,10 +520,10 @@ public class GUIReporte extends javax.swing.JFrame {
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         try {
             listConsulta.clearSelection();
-            obtenerElementos();
+            obtenerAtributosSeleccionados();
             condicionWhereDos();
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Debe seleccionar valores para la consulta");
+            JOptionPane.showMessageDialog(this, "Ingresar valores validos para la consulta");
         }
         
 
@@ -565,18 +536,18 @@ public class GUIReporte extends javax.swing.JFrame {
     private void butConsulta1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_butConsulta1ActionPerformed
         try {
             listConsulta.clearSelection();
-            obtenerElementos();
+            obtenerAtributosSeleccionados();
             condicionWhereUno();
             
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Debe seleccionar valores para la consulta");
+            JOptionPane.showMessageDialog(this, "Ingresar valores validos para la consulta");
         }
     }//GEN-LAST:event_butConsulta1ActionPerformed
 
     private void butJasperActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_butJasperActionPerformed
         JasperReport reporte;
         try { 
-            reporte = (JasperReport) JRLoader.loadObjectFromFile("./src/reports/Report.jasper");
+            reporte = (JasperReport) JRLoader.loadObjectFromFile("./src/reports/Reportasdf.jasper");
             JasperPrint print = JasperFillManager.fillReport(reporte, null, conn.getCon());
             JasperViewer ver = new JasperViewer (print,false);
             ver.setTitle("Prueba Reporte");
