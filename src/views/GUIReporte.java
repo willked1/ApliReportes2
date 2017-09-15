@@ -574,14 +574,10 @@ public class GUIReporte extends javax.swing.JFrame {
     }//GEN-LAST:event_butConsulta1ActionPerformed
 
     private void butJasperActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_butJasperActionPerformed
-        Connection con;
         JasperReport reporte;
-        try {
-            Class.forName("oracle.jdbc.driver.OracleDriver");
-            con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:XE","ciclista","ciclista");
-        
+        try { 
             reporte = (JasperReport) JRLoader.loadObjectFromFile("./src/reports/Report.jasper");
-            JasperPrint print = JasperFillManager.fillReport(reporte, null, con);
+            JasperPrint print = JasperFillManager.fillReport(reporte, null, conn.getCon());
             JasperViewer ver = new JasperViewer (print,false);
             ver.setTitle("Prueba Reporte");
             ver.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
@@ -595,14 +591,10 @@ public class GUIReporte extends javax.swing.JFrame {
     }//GEN-LAST:event_butJasperActionPerformed
 
     private void butReporte2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_butReporte2ActionPerformed
-        Connection con;
         JasperReport reporte;
         try {
-            Class.forName("oracle.jdbc.driver.OracleDriver");
-            con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:XE","ciclista","ciclista");
-        
             reporte = (JasperReport) JRLoader.loadObjectFromFile("./src/reports/Report2.jasper");
-            JasperPrint print = JasperFillManager.fillReport(reporte, null, con);
+            JasperPrint print = JasperFillManager.fillReport(reporte, null, conn.getCon());
             JasperViewer ver = new JasperViewer (print,false);
             ver.setTitle("Prueba Reporte");
             ver.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
